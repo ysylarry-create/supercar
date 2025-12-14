@@ -1,0 +1,88 @@
+<!-- html: models.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Car Models</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #293b98;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 24px;
+    }
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    a { color: #38bdf8; text-decoration: none; }
+    .back-link { margin-bottom: 16px; display: inline-block; }
+    .brand-title { font-size: 2rem; margin-bottom: 8px; }
+    .brand-sub { color: #9ca3af; margin-bottom: 20px; }
+    .models-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .model-card {
+      background: rgb(11, 16, 69);
+      border-radius: 12px;
+      padding: 16px 18px;
+      border: 1px solid rgba(148,163,184,0.4);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.8);
+    }
+    .model-name { font-size: 1.1rem; margin-bottom: 8px; font-weight: 600; }
+    .specs { list-style: none; padding: 0; margin: 0; font-size: 0.9rem; }
+    .specs li { margin: 3px 0; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <a class="back-link" href="Car%20model%20file.html">← Back to brands</a>
+
+  <h1 class="brand-title" id="brand-title"></h1>
+  <div class="brand-sub" id="brand-sub"></div>
+
+  <div id="models-container" class="models-grid"></div>
+</div>
+
+<script src="js/cars.js"></script>
+<script>
+  function getBrandFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("brand");
+  }
+
+  const brand = getBrandFromUrl();
+  const titleEl = document.getElementById("brand-title");
+  const subEl = document.getElementById("brand-sub");
+  const container = document.getElementById("models-container");
+
+  if (!brand || !CAR_DATA[brand]) {
+    titleEl.textContent = "Brand not found";
+    subEl.textContent = "The requested brand does not exist in the catalog.";
+  } else {
+    const models = CAR_DATA[brand];
+    titleEl.textContent = brand;
+    subEl.textContent = `${models.length} model${models.length > 1 ? "s" : ""} available`;
+
+    models.forEach(car => {
+      const card = document.createElement("div");
+      card.className = "model-card";
+      card.innerHTML = `
+                <div class="model-name">${car.model}</div>
+                <ul class="specs">
+                    <li><strong>Top Speed:</strong> ${car.topSpeed}</li>
+                    <li><strong>Engine:</strong> ${car.engine}</li>
+                    <li><strong>Horsepower:</strong> ${car.horsepower}</li>
+                    <li><strong>Country:</strong> ${car.country}</li>
+                    <li><strong>Price:</strong> ${car.price}</li>
+                </ul>
+            `;
+      container.appendChild(card);
+    });
+  }
+</script>
+</body>
+</html>

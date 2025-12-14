@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Car Brands</title>
+
+    <style>
+        /* Reset */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-1: #223187;
+            --bg-2: #06144c;
+            --accent: #72d3fd;
+            --accent-soft: rgba(4, 50, 69, 0.35);
+            --accent-strong: rgba(56, 189, 248, 0.8);
+            --card-bg: rgba(15, 23, 42, 0.82);
+            --card-border: rgba(148, 163, 184, 0.35);
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --text-soft: #6b7280;
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --shadow-soft: 0 22px 60px rgba(15, 23, 42, 0.9);
+            --shadow-card: 0 18px 50px rgba(15, 23, 42, 0.8);
+            --blur-amount: 18px;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            min-height: 100vh;
+            color: var(--text-main);
+            background:
+                    radial-gradient(circle at top left, #1272b3 0, transparent 55%),
+                    radial-gradient(circle at bottom right, #303b68 0, transparent 60%),
+                    linear-gradient(135deg, var(--bg-1), var(--bg-2));
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Subtle grain / noise overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.25;
+            mix-blend-mode: soft-light;
+            background-image:
+                    radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.25) 1px, transparent 0);
+            background-size: 3px 3px;
+            z-index: -1;
+        }
+
+        .page {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 28px 18px 40px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 26px;
+            padding: 14px 18px;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            background: radial-gradient(circle at top left, rgba(11, 45, 131, 0.92), rgba(10, 34, 96, 0.8));
+            box-shadow: 0 18px 60px rgba(7, 46, 143, 0.85);
+            backdrop-filter: blur(var(--blur-amount));
+        }
+
+        .title {
+            font-size: 2.1rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-pill {
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--accent-soft);
+            background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.35), rgba(21, 45, 103, 0.95));
+            font-size: 0.75rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #e0f2fe;
+        }
+
+        .logo-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--accent);
+            box-shadow: 0 0 14px rgba(56, 189, 248, 0.9);
+        }
+
+        /* Grid */
+        .card-grid {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* 5 columns by default */
+            gap: 20px;
+        }
+
+        /* Brand cards */
+        .brand-card {
+            position: relative;
+            padding: 18px 16px 16px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(
+                    135deg,
+                    rgba(60, 74, 106, 0.96),
+                    rgba(6, 18, 46, 0.86)
+            );
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-card);
+            text-decoration: none;
+            color: inherit;
+            overflow: hidden;
+            backdrop-filter: blur(16px);
+            transition:
+                    transform 180ms ease-out,
+                    box-shadow 180ms ease-out,
+                    border-color 180ms ease-out,
+                    background 180ms ease-out,
+                    translate 180ms ease-out;
+        }
+
+        /* Glow halo */
+        .brand-card::before {
+            content: "";
+            position: absolute;
+            inset: -40%;
+            background:
+                    radial-gradient(circle at top left, rgba(56, 189, 248, 0.26), transparent 55%),
+                    radial-gradient(circle at bottom right, rgba(129, 140, 248, 0.18), transparent 60%);
+            opacity: 0;
+            transition: opacity 200ms ease-out;
+            pointer-events: none;
+        }
+
+        /* Thin inner border */
+        .brand-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            border: 1px solid rgba(15, 23, 42, 0.9);
+            mix-blend-mode: soft-light;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .brand-card:hover,
+        .brand-card:focus-visible {
+            transform: translateY(-4px);
+            translate: 0 -1px;
+            box-shadow: 0 26px 70px rgba(15, 23, 42, 0.95);
+            border-color: var(--accent-strong);
+            background: linear-gradient(
+                    135deg,
+                    rgba(15, 23, 42, 0.99),
+                    rgba(44, 83, 175, 0.93)
+            );
+            outline: none;
+        }
+
+        .brand-card:hover::before,
+        .brand-card:focus-visible::before {
+            opacity: 1;
+        }
+
+        /* Card content */
+        .brand-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            letter-spacing: 0.03em;
+        }
+
+        .brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .pill {
+            padding: 3px 9px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.55);
+            background: radial-gradient(circle at top, rgba(57, 92, 175, 0.7), rgba(58, 87, 154, 0.95));
+            font-size: 0.75rem;
+            color: #e5e7eb;
+        }
+
+        .pill-ghost {
+            padding: 2px 7px;
+            border-radius: 999px;
+            border: 1px dashed rgba(148, 163, 184, 0.45);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .brand-meta {
+            margin-top: 11px;
+            font-size: 0.78rem;
+            color: var(--text-soft);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .meta-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .meta-label {
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .meta-text {
+            font-size: 0.78rem;
+        }
+
+        .arrow {
+            font-size: 0.9rem;
+            color: var(--accent);
+            transition: transform 160ms ease-out;
+        }
+
+        .brand-card:hover .arrow,
+        .brand-card:focus-visible .arrow {
+            transform: translateX(3px);
+        }
+
+        /* Footer */
+        footer {
+            padding: 10px 18px 20px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-soft);
+        }
+
+        /* Responsive */
+        @media (max-width: 720px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .title { font-size: 1.7rem; }
+            .page { padding-inline: 14px; }
+        }
+
+        @media (max-width: 480px) {
+            .card-grid {
+                grid-template-columns: 1fr; /* 1 column on very small screens */
+            }
+        }
+
+    </style>
+
+
+</head>
+<body>
+<div class="page">
+    <header class="page-header">
+        <div>
+            <div class="title">Supercar Catalog</div>
+            <div class="subtitle">Choose a brand to explore models, performance, and pricing.</div>
+        </div>
+        <div class="logo">CAR\_SPEC</div>
+    </header>
+
+    <main>
+        <div id="brand-list" class="card-grid"></div>
+    </main>
+</div>
+
+<footer>
+    Data is for demonstration purposes only.
+</footer>
+
+<script src="js/cars.js"></script>
+<script>
+    const brandListEl = document.getElementById("brand-list");
+
+    Object.keys(CAR_DATA).forEach(brand => {
+        const a = document.createElement("a");
+        a.className = "brand-card";
+        a.href = `models.html?brand=${encodeURIComponent(brand)}`;
+
+        const modelCount = CAR_DATA[brand].length;
+
+        a.innerHTML = `
+            <div class="brand-name">${brand}</div>
+            <div class="brand-badge">
+                <span class="pill">${modelCount} model${modelCount > 1 ? "s" : ""}</span>
+                <span>• Performance lineup</span>
+            </div>
+            <div class="brand-meta">
+                <span>View specs</span>
+                <span class="arrow">→</span>
+            </div>
+        `;
+
+        brandListEl.appendChild(a);
+    });
+</script>
+</body>
+</html>
